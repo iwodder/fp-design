@@ -66,6 +66,25 @@ class BloxorzSuite extends munit.FunSuite:
       assertEquals(solution.length, optsolution.length)
   }
 
+  test("is standing") {
+    new Level1:
+      assert(Block(Pos(1,1), Pos(1,1)).isStanding)
+      assert(!Block(Pos(1,1), Pos(1,2)).isStanding)
+  }
+
+  test("is legal") {
+    new Level1:
+      assert(Block(Pos(0,0), Pos(0,1)).isLegal, s"legal block(${Block(Pos(2,0), Pos(2,0))} position failed")
+      assert(Block(Pos(2,0), Pos(2,0)).isLegal, s"legal block(${Block(Pos(2,0), Pos(2,0))} position failed")
+      assert(!Block(Pos(-1,0), Pos(0,1)).isLegal, s"illegal block(${Block(Pos(-1,0), Pos(0,1))} position passed")
+      assert(!Block(Pos(2,0), Pos(3,0)).isLegal, s"illegal block(${Block(Pos(2,0), Pos(3,0))} position passed")
+  }
+
+  test("start block") {
+    new Level1:
+      assertEquals(startBlock, Block(Pos(1,1), Pos(1,1)), "start block not in correct position")
+  }
+
 
   import scala.concurrent.duration.*
   override val munitTimeout = 10.seconds
