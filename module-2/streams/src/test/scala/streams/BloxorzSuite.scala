@@ -85,6 +85,13 @@ class BloxorzSuite extends munit.FunSuite:
       assertEquals(startBlock, Block(Pos(1,1), Pos(1,1)), "start block not in correct position")
   }
 
+  test("neighbors of block") {
+    new Level1:
+      private val b: Block = Block(Pos(1,1), Pos(1,1))
+      assertEquals(b.neighbors, List((b.left, Move.Left), (b.right, Move.Right), (b.up, Move.Up), (b.down, Move.Down)))
+      assertEquals(b.legalNeighbors, List((b.right, Move.Right), (b.down, Move.Down)))
+  }
+
 
   import scala.concurrent.duration.*
   override val munitTimeout = 10.seconds
