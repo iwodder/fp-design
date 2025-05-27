@@ -12,7 +12,7 @@ class BloxorzSuite extends munit.FunSuite:
     import Move.*
     def solve(ls: List[Move]): Block =
       ls.foldLeft(startBlock) { case (block, move) =>
-        require(block.isLegal) // The solution must always lead to legal blocks
+        require(block.isLegal, s"illegal block ${block}") // The solution must always lead to legal blocks
         move match
           case Left => block.left
           case Right => block.right
@@ -92,6 +92,31 @@ class BloxorzSuite extends munit.FunSuite:
       assertEquals(b.legalNeighbors, List((b.right, Move.Right), (b.down, Move.Down)))
   }
 
+  test("done") {
+    new Level1:
+      assert(done(Block(Pos(4, 7), Pos(4, 7))))
+  }
 
+  test("neighbors with history") {
+    new Level1:
+      import Move.*
+      private val exp: Set[(Block, List[Move])] = Set(
+        (Block(Pos(1,2),Pos(1,3)), List(Right,Left,Up)),
+        (Block(Pos(2,1),Pos(3,1)), List(Down,Left,Up))
+      )
+      assertEquals(neighborsWithHistory(Block(Pos(1,1),Pos(1,1)), List(Left, Up)).to(Set), exp)
+  }
+
+  test("new neighbors only") {
+    new Level1:
+      import Move.*
+      private val exp: Set[(Block, List[Move])] = Set(
+        (Block(Pos(2,1),Pos(3,1)), List(Down,Left,Up))
+      )
+      private val allNeighbors = neighborsWithHistory(Block(Pos(1,1),Pos(1,1)), List(Left, Up))
+      private val explored = Set(Block(Pos(1,2),Pos(1,3)))
+      assertEquals(newNeighborsOnly(allNeighbors, explored).to(Set), exp)
+  }
+  
   import scala.concurrent.duration.*
   override val munitTimeout = 10.seconds
