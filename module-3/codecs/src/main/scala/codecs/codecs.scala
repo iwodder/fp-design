@@ -206,7 +206,13 @@ trait DecoderInstances:
     * the supplied `name` using the given `decoder`.
     */
   def field[A](name: String)(using decoder: Decoder[A]): Decoder[A] =
-    ???
+    Decoder.fromFunction{
+      case Json.Obj(obj) =>
+        obj.get(name) match
+          case Some(value) => decoder.decode(value)
+          case _ => None
+      case _ => None
+    }
 
 
 case class Person(name: String, age: Int)
@@ -223,7 +229,10 @@ trait PersonCodecs:
 
   /** The corresponding decoder for `Person` */
   given Decoder[Person] =
-    ???
+    Decoder.field[String]("name")
+     .zip(Decoder.field[Int]("age"))
+     .transform((name, age) => Person(name, age))
+
 
 
 case class Contacts(people: List[Person])
@@ -236,7 +245,11 @@ trait ContactsCodecs:
   // The JSON representation of a value of type `Contacts` should be
   // a JSON object with a single field named “people” containing an
   // array of values of type `Person` (reuse the `Person` codecs)
-  ()
+  given Encoder[Contacts] =
+    ObjectEncoder.field[List[Person]]("people").transform(_.people)
+
+  given Decoder[Contacts] =
+    Decoder.field[List[Person]]("people").transform(Contacts(_))
 
 
 // In case you want to try your code, here is a simple `Main`
