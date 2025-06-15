@@ -194,10 +194,12 @@ trait DecoderInstances:
     * using the given `decoder`. The resulting decoder succeeds only
     * if all the JSON array items are successfully decoded.
     */
-  given [A] (using decoder: Decoder[A]): Decoder[List[A]] = 
+  given [A] (using decoder: Decoder[A]): Decoder[List[A]] = {
     Decoder.fromFunction {
-      ???
+      case Json.Arr(arr) => Option(arr.map(decoder.decode).filterNot(_ == Option.empty).map(_.get))
+      case _ => None
     }
+  }
 
   /**
     * A decoder for JSON objects. It decodes the value of a field of
