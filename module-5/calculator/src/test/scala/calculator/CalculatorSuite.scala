@@ -15,7 +15,7 @@ class CalculatorSuite extends munit.FunSuite:
 
   test("tweetRemainingCharsCount with a constant signal") {
     val result = tweetRemainingCharsCount(Var("hello world"))
-    assert(result.currentValue == MaxTweetLength - tweetLength("hello world"))
+    assert(result.currentValue == MaxTweetLength - tweetLength("hello world"), s"result=${result.currentValue}")
 
     val tooLong = "foo" * 200
     val result2 = tweetRemainingCharsCount(Var(tooLong))
